@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎡 幸運大轉盤</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #ec4899;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", system-ui, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 { color: var(--primary-color); margin-bottom: 1.5rem; }
+
+        /* 轉盤容器 */
+        .wheel-wrapper {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+        }
+
+        /* 指針 */
+        .pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 40px;
+            background: #ff4757;
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            z-index: 10;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid #fff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            resize: none;
+        }
+
+        .btn-spin {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-spin:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        #resultText {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--secondary-color);
+            min-height: 2rem;
+        }
+
+        .winner-pop {
+            animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎡 幸運大轉盤</h1>
+    
+    <div class="wheel-wrapper">
+        <div class="pointer"></div>
+        <canvas id="wheelCanvas" width="600" height="600"></canvas>
+    </div>
+
+    <div id="resultText">準備好抽籤了嗎？</div>
+
+    <textarea id="nameList" placeholder="每行輸入一個名字..." oninput="drawWheel()">
+小明
+小美
+王小華
+阿草
+老張</textarea>
+
+    <button id="spinBtn" class="btn-spin" onclick="spin()">開始轉動！</button>
+</div>
+
+<script>
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+    const nameInput = document.getElementById('nameList');
+    const spinBtn = document.getElementById('spinBtn');
+    const resultText = document.getElementById('resultText');
+
+    let currentRotation = 0;
+    let isSpinning = false;
+    let names = [];
+
+    // 顏色清單
+    const colors = ['#6366f1', '#ec4899', '#8b5cf6', '#f59e0b', '#10b981', '#3b82f6', '#f43f5e'];
+
+    // 繪製轉盤
+    function drawWheel() {
+        names = nameInput.value.split('\n').map(n => n.trim()).filter(n => n !== "");
+        const numSegments = names.length;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = canvas.width / 2;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (numSegments === 0) {
+            ctx.fillStyle = '#e2e8f0';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.fill();
+            return;
+        }
+
+        const arcSize = (Math.PI * 2) / numSegments;
+
+        names.forEach((name, i) => {
+            const angle = i * arcSize;
+            
+            // 畫扇形
+            ctx.fillStyle = colors[i % colors.length];
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, angle, angle + arcSize);
+            ctx.closePath();
+            ctx.fill();
+
+            // 寫文字
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(angle + arcSize / 2);
+            ctx.textAlign = "right";
+            ctx.fillStyle = "white";
+            ctx.font = "bold 30px Microsoft JhengHei";
+            ctx.fillText(name, radius - 30, 10);
+            ctx.restore();
+        });
+    }
+
+    // 開始旋轉
+    function spin() {
+        if (isSpinning || names.length === 0) return;
+
+        isSpinning = true;
+        spinBtn.disabled = true;
+        resultText.innerText = "旋轉中...";
+        resultText.classList.remove('winner-pop');
+
+        // 隨機增加 5 到 10 圈的旋轉度數
+        const extraDegree = Math.floor(Math.random() * 360);
+        const totalSpins = 5 * 360 + extraDegree;
+        currentRotation += totalSpins;
+
+        canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+        // 監聽旋轉結束 (4秒，與 CSS transition 一致)
+        setTimeout(() => {
+            isSpinning = false;
+            spinBtn.disabled = false;
+            
+            // 計算中獎者
+            // 因為轉盤是順時針轉，指針在上方(270度位置)
+            // 需要扣除目前總角度並取餘數
+            const actualDegree = currentRotation % 360;
+            const arcSize = 360 / names.length;
+            
+            // 指針指向頂部 (相對於旋轉後的 270 度位置)
+            // 邏輯：(360 - (總度數 % 360) + 270) % 360
+            const winningIndex = Math.floor(((360 - actualDegree + 270) % 360) / arcSize);
+            
+            const winner = names[winningIndex];
+            resultText.innerHTML = `恭喜：<span>${winner}</span>`;
+            resultText.classList.add('winner-pop');
+        }, 4000);
+    }
+
+    // 初始化繪製
+    window.onload = drawWheel;
+</script>
+
+</body>
+</html>

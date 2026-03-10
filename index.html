@@ -1,43 +1,207 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>我的第一個網頁</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>114 Web Labs - 陳宜均的實驗室</title>
     <style>
-        /* 這裡就是 CSS，幫網頁化妝 */
+        /* 文青風格配色與變數 */
+        :root {
+            --primary-color: #7f8c8d; /* 莫蘭迪灰 */
+            --accent-color: #a68d7a;  /* 暖木色 */
+            --bg-color: #f4f1ea;      /* 仿古紙張色 */
+            --text-color: #4a4a4a;    /* 深灰 */
+            --text-muted: #95a5a6;    /* 淺灰 */
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --border-color: #dcdde1;
+        }
+
+        /* 基礎樣式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            /* 使用襯線體營造文學感 */
+            font-family: "Noto Serif TC", "Songti TC", serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            letter-spacing: 0.1em;
+        }
+
+        /* 主要容器 */
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 60px 40px;
+            border-radius: 2px; /* 降低圓角，呈現方正質感 */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
             text-align: center;
-            background-color: #f0f8ff;
-            padding: 50px;
+            border: 1px solid rgba(0,0,0,0.05);
         }
+
+        /* 標題區域 */
+        header {
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        header::after {
+            content: "";
+            display: block;
+            width: 30px;
+            height: 1px;
+            background: var(--accent-color);
+            margin: 20px auto 0;
+        }
+
         h1 {
-            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            color: var(--text-color);
+            font-weight: 300; /* 字重減輕 */
+            letter-spacing: 0.2em;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        /* 導覽連結清單 */
+        .lab-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 連結按鈕樣式 - 嚴格保留 lab1, lab2, lab3 連結 */
+        .lab-item a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 10px;
+            background: transparent;
+            border-bottom: 1px solid var(--border-color); /* 改為底線設計 */
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 400;
+            transition: all 0.5s ease;
+        }
+
+        /* 實驗編號 */
+        .lab-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .lab-index {
+            color: var(--accent-color);
+            font-size: 0.8rem;
+            margin-right: 20px;
+            font-family: serif;
+        }
+
+        .lab-name {
+            font-size: 1rem;
+        }
+
+        /* 箭頭符號 */
+        .arrow {
+            font-size: 0.8rem;
+            opacity: 0.3;
+            transition: all 0.5s ease;
+        }
+
+        /* 滑鼠懸停效果 (Hover) */
+        .lab-item a:hover {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+            padding-left: 15px;
+        }
+
+        .lab-item a:hover .arrow {
+            opacity: 1;
+            transform: translateX(5px);
+        }
+
+        /* 頁尾 */
+        footer {
+            margin-top: 60px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.2em;
+        }
+
+        /* 響應式手機調整 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 40px 25px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1>你好！我是陳宜均</h1>
-    <p>這是我親手寫的第一個網頁。</p>
-    
-    <button onclick="showMessage()">點擊我有驚喜</button>
+    <div class="container">
+        <header>
+            <h1>114 WEB LABS</h1>
+            <p class="subtitle">陳宜均 的網頁實作紀錄冊</p>
+        </header>
 
-    <script>
-        // 這裡就是 JavaScript，控制互動
-        function showMessage() {
-            alert("恭喜你！你已經踏出網頁開發的第一步了！");
-        }
-    </script>
+        <nav>
+            <ul class="lab-list">
+                <!-- 保留 lab1 連結 -->
+                <li class="lab-item">
+                    <a href="lab1/">
+                        <div class="lab-info">
+                            <span class="lab-index">No. 01</span>
+                            <span class="lab-name">基礎標記的練習</span>
+                        </div>
+                        <span class="arrow">VIEW</span>
+                    </a>
+                </li>
+                <!-- 保留 lab2 連結 -->
+                <li class="lab-item">
+                    <a href="lab2/">
+                        <div class="lab-info">
+                            <span class="lab-index">No. 02</span>
+                            <span class="lab-name">色彩與樣式的對話</span>
+                        </div>
+                        <span class="arrow">VIEW</span>
+                    </a>
+                </li>
+                <!-- 保留 lab3 連結 -->
+                <li class="lab-item">
+                    <a href="lab3/">
+                        <div class="lab-info">
+                            <span class="lab-index">No. 03</span>
+                            <span class="lab-name">響應空間的構築</span>
+                        </div>
+                        <span class="arrow">VIEW</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <footer>
+            <p>DESIGNED BY CHEN YI-JUN / 2024</p>
+        </footer>
+    </div>
 
 </body>
 </html>
